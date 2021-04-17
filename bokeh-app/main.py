@@ -98,12 +98,13 @@ def get_data(which_data):
     return AhA, AhB, norm_time, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy
 
 
-data_path = "bokeh-app/NRcatalog/"
+#data_path = "bokeh-app/NRcatalog/"
+data_path = "NRcatalog/"
 files = [f for f in glob.glob(data_path + "SXS*", recursive=True)]
 
 name=[]
 for i in range(len(files)):
-    name.append(files[i][20:])
+    name.append(files[i][10:])
 
 #input arxiv data
 pre='SXS_BBH_'
