@@ -372,10 +372,11 @@ layoutTD=row(column(pn41,pn42),column(pn43,pn44),column(q_slider,e_slider,s1z_sl
 
 
 tab1 = Panel(child=layoutNR, title="NR data")
-tab2 = Panel(child=layoutan,title="Analytic FD")
-tab3 = Panel(child=layout3,title="NR l=2")
-tab4 = Panel(child=layoutTD,title="Analytic TD")
-tabs = Tabs(tabs=[tab1,tab3,tab2,tab4],sizing_mode='scale_width')
+#tab2 = Panel(child=layoutan,title="Analytic FD")
+#tab3 = Panel(child=layout3,title="NR l=2")
+#tab4 = Panel(child=layoutTD,title="Analytic TD")
+#tabs = Tabs(tabs=[tab1,tab3,tab2,tab4],sizing_mode='scale_width')
+tabs = Tabs(tabs=[tab1],sizing_mode='scale_width')
 #layout = row(column(p,data_table),column(k,s),r)
 curdoc().add_root(tabs)
 curdoc().title = "Eccentric Waveforms Visualization"
