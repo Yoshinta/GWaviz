@@ -1,9 +1,9 @@
-# Copyright (C) 2019 Yoshinta Setyawati <yoshintaes@gmail.com>
+# Copyright (C) 2021 Yoshinta Setyawati <yoshintaes@gmail.com>
 
 # Visualization of SXS and analytic waveform model
-# Use by executing: bokeh serve wavevis.py
+# Use by executing: bokeh serve main.py
 # command to run at your command prompt.
-# Then navigate to the URL http://localhost:5007/waveanalytics in your browser.
+# Then navigate to the URL http://localhost:5006/main in your browser.
 
 
 import numpy as np
@@ -98,12 +98,12 @@ def get_data(which_data):
     return AhA, AhB, norm_time, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy
 
 
-data_path = "NRcatalog/"
+data_path = "bokeh-app/NRcatalog/"
 files = [f for f in glob.glob(data_path + "SXS*", recursive=True)]
 
 name=[]
 for i in range(len(files)):
-    name.append(files[i][10:])
+    name.append(files[i][20:])
 
 #input arxiv data
 pre='SXS_BBH_'
@@ -120,7 +120,6 @@ columns = [TableColumn(field = "q", title = "q"),
            TableColumn(field = "Simulation", title = "Simulation")]
 
 data_table = DataTable(source = sourcerx, columns = columns, width = 350, height = 350, editable = True)
-
 AhA, AhB, times, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy=get_data(data_path+name[0])
 a1 = {'x1': AhA[:,1], 'y1': AhA[:,2], 'x2': AhB[:,1], 'y2': AhB[:,2],'times': times, 'h22': h22.real, 'h22abs': np.abs(h22), 'ampscale':(np.abs(h22)/3.2 * (1+ times*1e-4/2.3)),'freq22': freq22, 'phase22': phase22,'hor_time': hor_times, 'sep': sep, 'mov_t': mov_avg_sep_t, 'mov_sep': mov_avg_sep, 'dx':dx,'dy':dy}
 source = ColumnDataSource(data=a1 )
@@ -372,11 +371,10 @@ layoutTD=row(column(pn41,pn42),column(pn43,pn44),column(q_slider,e_slider,s1z_sl
 
 
 tab1 = Panel(child=layoutNR, title="NR data")
-#tab2 = Panel(child=layoutan,title="Analytic FD")
-#tab3 = Panel(child=layout3,title="NR l=2")
-#tab4 = Panel(child=layoutTD,title="Analytic TD")
-#tabs = Tabs(tabs=[tab1,tab3,tab2,tab4],sizing_mode='scale_width')
-tabs = Tabs(tabs=[tab1],sizing_mode='scale_width')
+tab2 = Panel(child=layoutan,title="Analytic FD")
+tab3 = Panel(child=layout3,title="NR l=2")
+tab4 = Panel(child=layoutTD,title="Analytic TD")
+tabs = Tabs(tabs=[tab1,tab3,tab2,tab4],sizing_mode='scale_width')
 #layout = row(column(p,data_table),column(k,s),r)
 curdoc().add_root(tabs)
 curdoc().title = "Eccentric Waveforms Visualization"
