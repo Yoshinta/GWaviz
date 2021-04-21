@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+
 # Copyright (C) 2021 Yoshinta Setyawati <yoshintaes@gmail.com>
 
 # Visualization of SXS and analytic waveform model
@@ -98,13 +102,12 @@ def get_data(which_data):
     return AhA, AhB, norm_time, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy
 
 
-#data_path = "bokeh-app/NRcatalog/"
-data_path = "NRcatalog/"
+data_path = "bokeh-app/NRcatalog/"
 files = [f for f in glob.glob(data_path + "SXS*", recursive=True)]
 
 name=[]
 for i in range(len(files)):
-    name.append(files[i][10:])
+    name.append(files[i][20:])
 
 #input arxiv data
 pre='SXS_BBH_'
