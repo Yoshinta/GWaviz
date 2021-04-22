@@ -101,90 +101,6 @@ def get_data(which_data):
     norm_time=times-times[np.argmax(h22)]
     return AhA, AhB, norm_time, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy
 
-
-data_path = "bokeh-app/NRcatalog/"
-files = [f for f in glob.glob(data_path + "SXS*", recursive=True)]
-
-name=[]
-for i in range(len(files)):
-    name.append(files[i][20:])
-
-#input arxiv data
-pre='SXS_BBH_'
-data_arxiv = dict(Simulation = [pre+'0183',pre+'1374'],
-            q = [int(3),int(3)],
-            ecomm=['0.000','0.180'],
-            Norbs=['13.5','13.5'])
-
-sourcerx = ColumnDataSource(data_arxiv)
-
-columns = [TableColumn(field = "q", title = "q"),
-           TableColumn(field = "ecomm", title = "e_comm"),
-           TableColumn(field = "Norbs", title = "N_orbs"),
-           TableColumn(field = "Simulation", title = "Simulation")]
-
-data_table = DataTable(source = sourcerx, columns = columns, width = 350, height = 350, editable = True)
-AhA, AhB, times, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy=get_data(data_path+name[0])
-a1 = {'x1': AhA[:,1], 'y1': AhA[:,2], 'x2': AhB[:,1], 'y2': AhB[:,2],'times': times, 'h22': h22.real, 'h22abs': np.abs(h22), 'ampscale':(np.abs(h22)/3.2 * (1+ times*1e-4/2.3)),'freq22': freq22, 'phase22': phase22,'hor_time': hor_times, 'sep': sep, 'mov_t': mov_avg_sep_t, 'mov_sep': mov_avg_sep, 'dx':dx,'dy':dy}
-source = ColumnDataSource(data=a1 )
-
-p = figure(title='orbits in xy coordinates', x_axis_label='x', y_axis_label='y', plot_width=400, plot_height=400)
-p1=p.line(x='x1', y='y1',source = source, legend='Mass 1', color='blue')
-p2=p.line(x='x2', y='y2',source = source, legend='Mass 2', color='red')
-p.legend.click_policy="hide"
-p.toolbar.logo = None
-lines=[p1,p2]
-
-k=figure(title='Gravitational wave signal', x_axis_label='t/M', y_axis_label='strain', plot_width=600, plot_height=400)
-k1=k.line(x='times',y='h22',source=source,color='green',legend='h22 real')
-k2=k.line(x='times',y='h22abs',source=source,color='orange',legend='|h22|',line_width=5)
-k.legend.location = "top_left"
-k.legend.click_policy="hide"
-k.toolbar.logo = None
-lines=[k1,k2]
-
-r=figure(title='Phase h22',x_axis_label='t/M',y_axis_label='rad', plot_width=450, plot_height=400)
-r1=r.line(x='times',y='phase22',source=source,line_width=7)
-r.toolbar.logo = None
-
-s=figure(title='Amplitude and freq h22', x_axis_label='t/M', plot_width=450, plot_height=400)
-s1=s.line(x='times',y='freq22',source=source,color='pink',legend='Freq h22',line_width=5)
-s2=s.line(x='times',y='ampscale',source=source,color='purple',legend='Amp h22',line_width=5)
-s.legend.location = "top_left"
-s.legend.click_policy="hide"
-s.toolbar.logo = None
-lines=[s1,s2]
-
-u=figure(title='Horizon separation', x_axis_label='Horizon time', y_axis_label='separation', plot_width=400, plot_height=400)
-u1=u.line(x='hor_time',y='sep',source=source,color='blue',legend='Horizon separation',line_width=3)
-u2=u.circle(x='mov_t',y='mov_sep',source=source,color='brown',legend='Avg horizon sep',size=10)
-u.legend.location = "bottom_left"
-u.legend.click_policy="hide"
-u.toolbar.logo = None
-lines=[u1,u2]
-#select = Select(title="Simulations",  options=name)
-
-p1x=figure(title='orbital separation', x_axis_label='dx', y_axis_label='dy', plot_width=400, plot_height=400)
-p1x.line(x='dx',y='dy',source=source,color='pink')
-p1x.toolbar.logo = None
-
-
-def update_table(attrname, old, new):
-    try:
-        selected_index = sourcerx.selected.indices[0]
-        sval=sourcerx.data["Simulation"][selected_index]
-        which_data = data_path+sval  # changed this to the dict
-        AhA, AhB, times, h22,phase22,freq22, hor_times, sep, mov_avg_sep_t,mov_avg_sep,dx,dy=get_data(which_data)
-        d2 = {'x1': AhA[:,1], 'y1': AhA[:,2], 'x2': AhB[:,1], 'y2': AhB[:,2],'times': times, 'h22': h22.real, 'h22abs': np.abs(h22), 'ampscale':(np.abs(h22)/3.2 * (1+ times*1e-4/2.3)),'freq22': freq22, 'phase22': phase22,'hor_time': hor_times, 'sep': sep, 'mov_t': mov_avg_sep_t, 'mov_sep': mov_avg_sep, 'dx':dx,'dy':dy}
-        newSource=d2
-        source.data=newSource
-    except IndexError:
-        pass
-
-sourcerx.selected.on_change('indices', update_table)
-#select.on_change('value', update_plot)
-#layoutNR = row(column(p,u),column(k,s),column(row(data_table),r))
-layoutNR= layout([[p,k,p1x,data_table],[u, s,r]])
 # =============================================================================
 #                                   Second panel
 # =============================================================================
@@ -251,49 +167,6 @@ layoutan=row(column(pn21,pn22),column(pn23,pn24),column(q_slider,e_slider,model_
 #                                   Third panel
 # =============================================================================
 
-
-time_hlm,h21, h2m1,h2m2lm, h22lm,h20=get_hlm(data_path+name[0])
-dic_hlm={'time_hlm':time_hlm,'h21real':h21.real,'h21imag':h21.imag, 'h2m1real':h2m1.real,'h2m1imag':h2m1.imag,'h2m2lmreal': h2m2lm.real,'h2m2lmimag':h2m2lm.imag, 'h22lmreal': h22lm.real,'h22lmimag':h22lm.imag,'h20real':h20.real,'h20imag':h20.imag}
-source32 = ColumnDataSource(data=dic_hlm )
-
-source31 = ColumnDataSource(data_arxiv)
-data_table2 = DataTable(source = source31, columns = columns, width = 350, height = 350, editable = True)
-
-pn31=figure(title='h2m1',x_axis_label='t/M',y_axis_label='strain', plot_width=400, plot_height=400)
-pn311=pn31.line(x='time_hlm', y='h2m1real',source = source32, color='blue',legend='Re{h2m1}')
-pn312=pn31.line(x='time_hlm', y='h2m1imag',source = source32, color='red',legend='Im{h2m1}')
-pn31.toolbar.logo = None
-pn31.legend.click_policy="hide"
-lines=[pn311,pn312]
-
-pn32=figure(title='h21',x_axis_label='t/M',y_axis_label='strain', plot_width=400, plot_height=400)
-pn321=pn32.line(x='time_hlm', y='h21real',source = source32, color='blue',legend='Re{h21}')
-pn322=pn32.line(x='time_hlm', y='h21imag',source = source32, color='red',legend='Im{h21}')
-pn32.toolbar.logo = None
-pn32.legend.click_policy="hide"
-lines=[pn321,pn322]
-
-pn33=figure(title='h20',x_axis_label='t/M',y_axis_label='strain', plot_width=400, plot_height=400)
-pn331=pn33.line(x='time_hlm', y='h20real',source = source32, color='blue',legend='Re{h20}')
-pn332=pn33.line(x='time_hlm', y='h20imag',source = source32, color='red',legend='Im{h20}')
-pn33.legend.click_policy="hide"
-pn33.toolbar.logo = None
-lines=[pn331,pn332]
-
-pn34=figure(title='h2m2',x_axis_label='t/M',y_axis_label='strain', plot_width=400, plot_height=400)
-pn341=pn34.line(x='time_hlm', y='h2m2lmreal',source = source32, color='blue',legend='Re{h2m2}')
-pn342=pn34.line(x='time_hlm', y='h2m2lmimag',source = source32, color='red',legend='Im{h2m2}')
-pn34.legend.click_policy="hide"
-pn34.toolbar.logo = None
-lines=[pn341,pn342]
-
-pn35=figure(title='h22',x_axis_label='t/M',y_axis_label='strain', plot_width=400, plot_height=400)
-pn351=pn35.line(x='time_hlm', y='h22lmreal',source = source32, color='blue',legend='Re{h22}')
-pn352=pn35.line(x='time_hlm', y='h22lmimag',source = source32, color='red',legend='Im{h22}')
-pn35.toolbar.logo = None
-pn35.legend.click_policy="hide"
-lines=[pn351,pn352]
-
 def update_table2(attrname, old, new):
     try:
         selected_index = source31.selected.indices[0]
@@ -304,8 +177,6 @@ def update_table2(attrname, old, new):
     except IndexError:
         pass
 
-source31.selected.on_change('indices', update_table2)
-layout3= layout([[pn31,pn32,pn33],[pn34,pn35,data_table2]])
 
 # =============================================================================
 #                                   Fourth panel
@@ -374,11 +245,12 @@ for w in [q_slider,e_slider,s1z_slider,s2z_slider,model_select]:
 layoutTD=row(column(pn41,pn42),column(pn43,pn44),column(q_slider,e_slider,s1z_slider,s2z_slider,model_select))
 
 
-tab1 = Panel(child=layoutNR, title="NR data")
+#tab1 = Panel(child=layoutNR, title="NR data")
 tab2 = Panel(child=layoutan,title="Analytic FD")
-tab3 = Panel(child=layout3,title="NR l=2")
+#tab3 = Panel(child=layout3,title="NR l=2")
 tab4 = Panel(child=layoutTD,title="Analytic TD")
-tabs = Tabs(tabs=[tab1,tab3,tab2,tab4],sizing_mode='scale_width')
+#tabs = Tabs(tabs=[tab1,tab3,tab2,tab4],sizing_mode='scale_width')
+tabs = Tabs(tabs=[tab2,tab4],sizing_mode='scale_width')
 #layout = row(column(p,data_table),column(k,s),r)
 curdoc().add_root(tabs)
 curdoc().title = "Eccentric Waveforms Visualization"
