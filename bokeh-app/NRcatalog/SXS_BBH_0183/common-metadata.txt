@@ -1,3 +1,0 @@
-point-of-contact-email = jonathan.blackman.0@gmail.com
-alternative-names = PRIVATE:BBH:0125, SXS:BBH:0183
-simulation-bibtex-keys = Blackman:2015pia,Boyle:2019kee,SXSCatalogWebsite

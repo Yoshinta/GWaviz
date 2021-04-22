@@ -1,2 +1,0 @@
-point-of-contact-email = ian.hinder@aei.mpg.de
-alternative-names = SXS:BBH:1374
