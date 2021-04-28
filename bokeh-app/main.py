@@ -146,22 +146,22 @@ pn24.line(x='freq', y='phase',source = sourcep2, color='red',line_width=3)
 pn24.toolbar.logo = None
 
 
-q_slider = Slider(start=1, end=10, value=1, step=.5, title="Mass ratio (q)")
-e_slider = Slider(start=0., end=0.9, value=0, step=.05, title="Eccentricity (e)")
-model_select = Select(title="FD Models",  options=fd_approximants())
+q_sliderFD = Slider(start=1, end=10, value=1, step=.5, title="Mass ratio (q)")
+e_sliderFD = Slider(start=0., end=0.9, value=0, step=.05, title="Eccentricity (e)")
+model_selectFD = Select(title="FD Models",  options=fd_approximants())
 
 def update_slider(attrname, old, new):
     # Get the current slider values
-    q = q_slider.value
-    e = e_slider.value
-    approximant = model_select.value
+    q = q_sliderFD.value
+    e = e_sliderFD.value
+    approximant = model_selectFD.value
     freq,hp_real,hc_real,hp_imag,hc_imag,amp,phase=generate_analytic_waveform(mass_rat=q,eccentricity=e,approximant=approximant)
     sourcep2.data = {'hp_real':hp_real,'hc_real':hc_real,'hp_imag':hp_imag,'hc_imag':hc_imag,'amp':amp,'phase':phase,'freq':freq}
 
-for w in [q_slider,e_slider,model_select]:
+for w in [q_sliderFD,e_sliderFD,model_selectFD]:
     w.on_change('value', update_slider)
 
-layoutan=row(column(pn21,pn22),column(pn23,pn24),column(q_slider,e_slider,model_select))
+layoutan=row(column(pn21,pn22),column(pn23,pn24),column(q_sliderFD,e_sliderFD,model_selectFD))
 
 # =============================================================================
 #                                   Third panel
