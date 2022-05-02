@@ -110,15 +110,15 @@ def q_to_masses(mass_rat,total_m):
     mass2=total_m-mass1
     return mass1,mass2
 
-def generate_analytic_waveform(mass_rat, eccentricity,approximant='TaylorF2Ecc',total_m=50,f_lower=20.,delta_f=0.1):
+def generate_analytic_waveform(mass_rat, eccentricity, spin1z, spin2z, approximant='TaylorF2Ecc',total_m=50,f_lower=20.,delta_f=0.1):
     mass1,mass2=q_to_masses(mass_rat,total_m)
-    hp,hc=hp,hc=get_fd_waveform(mass1=mass1,mass2=mass2,delta_f=delta_f,f_lower=f_lower, approximant=approximant,eccentricity=eccentricity)
+    hp,hc=hp,hc=get_fd_waveform(mass1=mass1,mass2=mass2,spin1z=spin1z, spin2z=spin2z, delta_f=delta_f,f_lower=f_lower, approximant=approximant,eccentricity=eccentricity)
     hs=hp+hc*1j
     amp=amplitude_from_frequencyseries(types.FrequencySeries(hs,delta_f=delta_f))
     phase=phase_from_frequencyseries(types.FrequencySeries(hs,delta_f=delta_f))
     return hp.sample_frequencies.data,np.real(hp.data),np.real(hc.data),np.imag(hp.data),np.imag(hc.data),amp.data,phase.data
 
-freq,hp_real,hc_real,hp_imag,hc_imag,amp,phase=generate_analytic_waveform(mass_rat=1.,eccentricity=0)
+freq,hp_real,hc_real,hp_imag,hc_imag,amp,phase=generate_analytic_waveform(mass_rat=1.,eccentricity=0, spin1z=0., spin2z=0.)
 dic_p2 = {'hp_real':hp_real,'hc_real':hc_real,'hp_imag':hp_imag,'hc_imag':hc_imag,'amp':amp,'phase':phase,'freq':freq}
 sourcep2=ColumnDataSource(data=dic_p2)
 
@@ -148,20 +148,24 @@ pn24.toolbar.logo = None
 
 q_sliderFD = Slider(start=1, end=10, value=1, step=.5, title="Mass ratio (q)")
 e_sliderFD = Slider(start=0., end=0.9, value=0, step=.05, title="Eccentricity (e)")
+s1z_sliderFD = Slider(start=-10, end=10, value=0, step=.05, title="Spin1z")
+s2z_sliderFD = Slider(start=-10, end=10, value=0, step=.05, title="Spin2z")
 model_selectFD = Select(title="FD Models",  options=fd_approximants())
 
 def update_slider(attrname, old, new):
     # Get the current slider values
     q = q_sliderFD.value
     e = e_sliderFD.value
+    s1z = s1z_sliderFD.value
+    s2z = s2z_sliderFD.value
     approximant = model_selectFD.value
-    freq,hp_real,hc_real,hp_imag,hc_imag,amp,phase=generate_analytic_waveform(mass_rat=q,eccentricity=e,approximant=approximant)
+    freq,hp_real,hc_real,hp_imag,hc_imag,amp,phase=generate_analytic_waveform(mass_rat=q,eccentricity=e,spin1z=s1z,spin2z=s2z,approximant=approximant)
     sourcep2.data = {'hp_real':hp_real,'hc_real':hc_real,'hp_imag':hp_imag,'hc_imag':hc_imag,'amp':amp,'phase':phase,'freq':freq}
 
-for w in [q_sliderFD,e_sliderFD,model_selectFD]:
+for w in [q_sliderFD,e_sliderFD,s1z_sliderFD,s2z_sliderFD,model_selectFD]:
     w.on_change('value', update_slider)
 
-layoutan=row(column(pn21,pn22),column(pn23,pn24),column(q_sliderFD,e_sliderFD,model_selectFD))
+layoutan=row(column(pn21,pn22),column(pn23,pn24),column(q_sliderFD,e_sliderFD,s1z_sliderFD,s2z_sliderFD,model_selectFD))
 
 # =============================================================================
 #                                   Third panel
@@ -225,8 +229,8 @@ pn44.toolbar.logo = None
 
 q_slider = Slider(start=1, end=10, value=1, step=.5, title="Mass ratio (q)")
 e_slider = Slider(start=0., end=0.9, value=0, step=.05, title="Eccentricity (e)")
-s1z_slider = Slider(start=-1, end=1, value=0, step=.05, title="Spin1z")
-s2z_slider = Slider(start=-1, end=1, value=0, step=.05, title="Spin2z")
+s1z_slider = Slider(start=-10, end=10, value=0, step=.05, title="Spin1z")
+s2z_slider = Slider(start=-10, end=10, value=0, step=.05, title="Spin2z")
 model_select = Select(title="TD Models",  options=td_approximants())
 
 def update_slider2(attrname, old, new):
